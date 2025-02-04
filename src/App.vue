@@ -69,9 +69,9 @@ const pinCode = ref<string>(getRandomArbitrary(1000, 9999).toString());
 const { copy, isSupported } = useClipboard()
 
 function handleCopy() {
-  if (isSupported) {
-    copy(pinCode.value.toString())
-  }
+  // if (isSupported) {
+  // }
+  copy(pinCode.value.toString())
 }
 
 async function submit() {
@@ -91,7 +91,7 @@ async function submit() {
     // creatorId:
   }
 
-  const result = axios.post('http://127.0.0.1:8000/create_meeting', )
+  const result = axios.post('http://127.0.0.1:8000/create_meeting',)
 
   console.log(result)
 
@@ -158,7 +158,7 @@ async function submit() {
     </div>
     <div v-show="enablePinCode" class="meeting-item">
       <div class="pincode-panel">
-        <IconField v-if="isSupported">
+        <IconField>
           <InputIcon>
             <svg id="lock-icon" width="1.1rem" height="1.1rem" viewBox="0 0 24 24" fill="none"
               xmlns="http://www.w3.org/2000/svg">
@@ -181,7 +181,8 @@ async function submit() {
       </div>
     </div>
     <div class="meeting-item">
-      <Button v-if="meetingTheme" @click="submit" id="submit-button" label="Создать встречу" severity="success"></Button>
+      <Button v-if="meetingTheme" @click="submit" id="submit-button" label="Создать встречу"
+        severity="success"></Button>
     </div>
   </main>
 </template>
