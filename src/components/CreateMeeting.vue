@@ -1,26 +1,26 @@
 <template>
     <h1>Новая встреча</h1>
     <div class="meeting-item">
-        <MeetingTextInformationComponent v-model="meetingTheme" text="Тема встречи" placeholderText="Будет в заголовке"
+        <MeetingTextInformation v-model="meetingTheme" text="Тема встречи" placeholderText="Будет в заголовке"
             :validate="true" />
-        <MeetingTextInformationComponent v-model="meetingText" text="Текст приглашения"
+        <MeetingTextInformation v-model="meetingText" text="Текст приглашения"
             placeholderText="О чём будет встреча" />
     </div>
     <div class="meeting-item">
-        <DatetimeComponent v-model:pickedDate="pickedDate" v-model:pickedTimeFrom="pickedTimeFrom"
+        <MeetingDatetimeOptions v-model:pickedDate="pickedDate" v-model:pickedTimeFrom="pickedTimeFrom"
             v-model:pickedTimeTo="pickedTimeTo" />
     </div>
     <div class="meeting-item">
-        <BooleanComponent v-model="allowAnonymous" title="Внешние участники"
+        <MeetingBooleanOptions v-model="allowAnonymous" title="Внешние участники"
             description="Сможет подключиться любой, у кого есть ссылка" />
-        <BooleanComponent v-model="enableSip" title="Подключение по звонку"
+        <MeetingBooleanOptions v-model="enableSip" title="Подключение по звонку"
             description="Разрешить подключение через городскую связь или по протоколу SIP" />
-        <BooleanComponent v-model="enableAutoRecording" title="Автоматическая запись встречи"
+        <MeetingBooleanOptions v-model="enableAutoRecording" title="Автоматическая запись встречи"
             description="Встреча будет записана автоматически" />
-        <BooleanComponent v-model="enablePinCode" title="Вход по PIN-коду"
+        <MeetingBooleanOptions v-model="enablePinCode" title="Вход по PIN-коду"
             description="Для подключения потрубется ввести PIN-код" />
     </div>
-    <PincodeComponent v-model:enablePinCode="enablePinCode" v-model:pinCode="pinCode" />
+    <MeetingPincodeOptions v-model:enablePinCode="enablePinCode" v-model:pinCode="pinCode" />
     <div class="meeting-item">
         <Button v-if="meetingTheme" @click="submit" id="submit-button" label="Создать встречу"
             severity="success"></Button>
@@ -31,13 +31,13 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button';
-import MeetingTextInformationComponent from './MeetingTextInformationComponent.vue';
-import DatetimeComponent from './DatetimeComponent.vue';
+import MeetingTextInformation from './MeetingTextInformation.vue';
+import MeetingDatetimeOptions from './MeetingDatetimeOptions.vue';
 import { Timezone } from './models/TimezoneClass';
 import { type IMeeting } from './/models/MeetingInterface';
 import axios from 'axios'
-import BooleanComponent from './BooleanComponent.vue';
-import PincodeComponent from './PincodeComponent.vue';
+import MeetingBooleanOptions from './MeetingBooleanOptions.vue';
+import MeetingPincodeOptions from './MeetingPincodeOptions.vue';
 
 const router = useRouter()
 
