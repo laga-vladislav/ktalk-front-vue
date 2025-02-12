@@ -7,7 +7,7 @@ input {
     width: 100%;
 }
 
-main#calendar {
+main#main {
     color: white;
     font-size: 1rem;
     background-color: var(--ktalk-background);
@@ -18,7 +18,7 @@ main#calendar {
     padding: 1.8rem 1.2rem;
 }
 
-main#calendar>*:not(:last-child) {
+main#main>*:not(:last-child) {
     margin-bottom: 29px;
 }
 
