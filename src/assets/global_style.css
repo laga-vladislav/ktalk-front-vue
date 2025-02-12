@@ -8,6 +8,15 @@ input {
 }
 
 main#main {
+    min-width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--ktalk-background)
+}
+
+div#main-container {
     color: white;
     font-size: 1rem;
     background-color: var(--ktalk-background);
@@ -18,7 +27,7 @@ main#main {
     padding: 1.8rem 1.2rem;
 }
 
-main#main>*:not(:last-child) {
+div#main-container>*:not(:last-child) {
     margin-bottom: 29px;
 }
 

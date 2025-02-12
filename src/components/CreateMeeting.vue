@@ -1,29 +1,31 @@
 <template>
-    <h1>Новая встреча</h1>
-    <div class="meeting-item">
-        <MeetingTextInformation v-model="meetingTheme" text="Тема встречи" placeholderText="Будет в заголовке"
-            :validate="true" />
-        <MeetingTextInformation v-model="meetingText" text="Текст приглашения"
-            placeholderText="О чём будет встреча" />
-    </div>
-    <div class="meeting-item">
-        <MeetingDatetimeOptions v-model:pickedDate="pickedDate" v-model:pickedTimeFrom="pickedTimeFrom"
-            v-model:pickedTimeTo="pickedTimeTo" />
-    </div>
-    <div class="meeting-item">
-        <MeetingBooleanOptions v-model="allowAnonymous" title="Внешние участники"
-            description="Сможет подключиться любой, у кого есть ссылка" />
-        <MeetingBooleanOptions v-model="enableSip" title="Подключение по звонку"
-            description="Разрешить подключение через городскую связь или по протоколу SIP" />
-        <MeetingBooleanOptions v-model="enableAutoRecording" title="Автоматическая запись встречи"
-            description="Встреча будет записана автоматически" />
-        <MeetingBooleanOptions v-model="enablePinCode" title="Вход по PIN-коду"
-            description="Для подключения потрубется ввести PIN-код" />
-    </div>
-    <MeetingPincodeOptions v-model:enablePinCode="enablePinCode" v-model:pinCode="pinCode" />
-    <div class="meeting-item">
-        <Button v-if="meetingTheme" @click="submit" id="submit-button" label="Создать встречу"
-            severity="success"></Button>
+    <div id="main-container">
+        <h1>Новая встреча</h1>
+        <div class="meeting-item">
+            <MeetingTextInformation v-model="meetingTheme" text="Тема встречи" placeholderText="Будет в заголовке"
+                :validate="true" />
+            <MeetingTextInformation v-model="meetingText" text="Текст приглашения"
+                placeholderText="О чём будет встреча" />
+        </div>
+        <div class="meeting-item">
+            <MeetingDatetimeOptions v-model:pickedDate="pickedDate" v-model:pickedTimeFrom="pickedTimeFrom"
+                v-model:pickedTimeTo="pickedTimeTo" />
+        </div>
+        <div class="meeting-item">
+            <MeetingBooleanOptions v-model="allowAnonymous" title="Внешние участники"
+                description="Сможет подключиться любой, у кого есть ссылка" />
+            <MeetingBooleanOptions v-model="enableSip" title="Подключение по звонку"
+                description="Разрешить подключение через городскую связь или по протоколу SIP" />
+            <MeetingBooleanOptions v-model="enableAutoRecording" title="Автоматическая запись встречи"
+                description="Встреча будет записана автоматически" />
+            <MeetingBooleanOptions v-model="enablePinCode" title="Вход по PIN-коду"
+                description="Для подключения потрубется ввести PIN-код" />
+        </div>
+        <MeetingPincodeOptions v-model:enablePinCode="enablePinCode" v-model:pinCode="pinCode" />
+        <div class="meeting-item">
+            <Button v-if="meetingTheme" @click="submit" id="submit-button" label="Создать встречу"
+                severity="success"></Button>
+        </div>
     </div>
 </template>
 
@@ -41,7 +43,7 @@ import MeetingPincodeOptions from './MeetingPincodeOptions.vue';
 
 const router = useRouter()
 
-function goToAbout() {
+function goToCreateMeeting() {
     router.push('/create-meeting')
 }
 
@@ -99,6 +101,10 @@ async function submit() {
 </script>
 
 <style scoped>
+div#main-container {
+    border: .1rem solid white;
+}
+
 #copy-button:hover>svg {
     filter: invert();
 }
