@@ -23,7 +23,7 @@
         </div>
         <MeetingPincodeOptions v-model:enablePinCode="enablePinCode" v-model:pinCode="pinCode" />
         <div class="meeting-item">
-            <Button v-if="meetingTheme" @click="submit" id="submit-button" label="Создать встречу"
+            <Button :disabled="!meetingTheme" @click="submit" id="submit-button" label="Создать встречу"
                 severity="success"></Button>
         </div>
     </div>
