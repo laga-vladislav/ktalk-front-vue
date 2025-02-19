@@ -31,7 +31,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router'
 import Button from 'primevue/button';
 import MeetingTextInformation from './MeetingTextInformation.vue';
 import MeetingDatetimeOptions from './MeetingDatetimeOptions.vue';
@@ -40,12 +39,6 @@ import { type IMeeting } from './/models/MeetingInterface';
 import axios from 'axios'
 import MeetingBooleanOptions from './MeetingBooleanOptions.vue';
 import MeetingPincodeOptions from './MeetingPincodeOptions.vue';
-
-const router = useRouter()
-
-function goToCreateMeeting() {
-    router.push('/create-meeting')
-}
 
 const urlParams = new URLSearchParams(window.location.search)
 // const authId = urlParams.get('auth_id');
