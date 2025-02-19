@@ -15,11 +15,7 @@ document.cookie.split(";").forEach(cookie => {
   const [name, value] = cookie.trim().split("=");
   if (name === "jwt") {
     const payload = JSON.parse(atob(value.split(".")[1]));
-    if (payload.isAdmin) {
-      goToSettings()
-    } else {
-      goToCreateMeeting()
-    }
+    console.log(payload)
   }
 });
 </script>
