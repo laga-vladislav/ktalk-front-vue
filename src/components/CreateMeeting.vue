@@ -39,11 +39,10 @@ import { type IMeeting } from './/models/MeetingInterface';
 import axios from 'axios'
 import MeetingBooleanOptions from './MeetingBooleanOptions.vue';
 import MeetingPincodeOptions from './MeetingPincodeOptions.vue';
+import type { IUser } from './models/UserInterface';
 
-const urlParams = new URLSearchParams(window.location.search)
-// const authId = urlParams.get('auth_id');
-// const domain = urlParams.get('domain');
-console.log(urlParams)
+const userInfoString = sessionStorage.getItem('userInfo')
+const userInfo: IUser = userInfoString ? JSON.parse(userInfoString) : null
 
 function getRandomArbitrary(min: number, max: number) {
     return Math.ceil(Math.random() * (max - min) + min);
@@ -66,9 +65,6 @@ const enableAutoRecording = ref(false);
 const enablePinCode = ref(false);
 const pinCode = ref<string>(getRandomArbitrary(1000, 9999).toString());
 
-
-
-
 async function submit() {
     const meeting: IMeeting = {
         subject: meetingTheme.value,
@@ -83,7 +79,7 @@ async function submit() {
     }
 
     const request = {
-        // creatorId:
+         
     }
 
     const result = axios.post('http://127.0.0.1:8000/create_meeting',)
