@@ -1,10 +1,9 @@
-import axios from 'axios';
 import { createRouter, createWebHistory } from 'vue-router'
 import CreateMeeting from './components/CreateMeeting.vue'
 import Menu from './components/Menu.vue'
 import Settings from './components/Settings.vue'
 import ErrorPage from './components/ErrorPage.vue';
-import type { IUser } from './components/models/UserInterface';
+import { getJwt, getJwtPayloadFromApi } from './authorization';
 
 console.log(import.meta.env.VITE_BACK_DOMAIN + "/verify-jwt")
 
@@ -21,39 +20,6 @@ const router = createRouter({
     routes
 })
 
-function getJwt(queryName: string = 'jwt'): string | undefined {
-    let token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith(queryName + '='))
-        ?.split('=')[1];
-    return token;
-}
-
-async function getJwtPayloadFromApi(token: string): Promise<IUser> {
-    try {
-        const { data } = await axios.post(
-            import.meta.env.VITE_BACK_DOMAIN + "/verify-jwt",
-            { jwt: token }
-        );
-        const userInfo: IUser = data
-        return userInfo
-
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            if (!error.response) {
-                throw new Error("API недоступен");
-            } else if (error.response.status === 401 || error.response.status === 403) {
-                throw new Error("Невалидный токен");
-            } else {
-                console.error("Неизвестная ошибка API:", error.response.status, error.response.data);
-                throw new Error("Ошибка сервера");
-            }
-        } else {
-            console.error("Неожиданная ошибка при проверке JWT:", error);
-            throw new Error("Неизвестная ошибка");
-        }
-    }
-}
 
 router.beforeResolve(async (to, from, next) => {
     const token = getJwt();
