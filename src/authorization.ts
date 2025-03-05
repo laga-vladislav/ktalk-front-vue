@@ -5,12 +5,12 @@ import { setUserInfoToSessionStorage } from './utils';
 import { sendApiRequest } from './requestSender';
 
 
-function getJwtFromCookie(queryName: string = 'jwt'): string | undefined {
+function getJwtFromCookie(queryName: string = 'jwt'): string {
     let token = document.cookie
         .split('; ')
         .find(row => row.startsWith(queryName + '='))
         ?.split('=')[1];
-    return token;
+    return token ? token : "";
 }
 
 async function getJwtPayloadFromApi(token: string, apiUrl: string = import.meta.env.VITE_BACK_DOMAIN) {

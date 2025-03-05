@@ -27,8 +27,10 @@ async function sendApiRequest<T>(
             throw new Error(`Ошибка ${response.status}: ${errorText || 'Неизвестная ошибка'}`);
         }
 
-        const result = await response.json();
-        return { success: true, data: result as T };
+        // Проверяем, есть ли тело
+        const text = await response.text();
+        const result = text ? JSON.parse(text) as T : undefined; // Если пусто — null
+        return { success: true, data: result };
     } catch (error) {
         return {
             success: false,
