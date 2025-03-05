@@ -1,8 +1,11 @@
-import axios from 'axios';
+export { getJwtFromCookie, getJwtPayloadFromApi }
+
 import { type IUser } from './components/models/UserInterface'
+import { setUserInfoToSessionStorage } from './utils';
+import { sendApiRequest } from './requestSender';
 
 
-export function getJwt(queryName: string = 'jwt'): string | undefined {
+function getJwtFromCookie(queryName: string = 'jwt'): string | undefined {
     let token = document.cookie
         .split('; ')
         .find(row => row.startsWith(queryName + '='))
@@ -10,31 +13,27 @@ export function getJwt(queryName: string = 'jwt'): string | undefined {
     return token;
 }
 
-export async function getJwtPayloadFromApi(
-    token: string,
-    api_url: string = import.meta.env.VITE_BACK_DOMAIN
-): Promise<IUser> {
-    try {
-        const { data } = await axios.post(
-            api_url + "/verify-jwt",
-            { jwt: token }
-        );
-        const userInfo: IUser = data
-        return userInfo
+async function getJwtPayloadFromApi(token: string, apiUrl: string = import.meta.env.VITE_BACK_DOMAIN) {
+    const response = await sendApiRequest<IUser>(
+        `${apiUrl}/get-jwt-payload`,
+        {},
+        token
+    );
 
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            if (!error.response) {
-                throw new Error("API недоступен");
-            } else if (error.response.status === 401 || error.response.status === 403) {
-                throw new Error("Невалидный токен");
-            } else {
-                console.error("Неизвестная ошибка API:", error.response.status, error.response.data);
-                throw new Error("Ошибка сервера");
-            }
+    if (response.success) {
+        const userInfo = response.data
+        setUserInfoToSessionStorage(userInfo);
+    } else {
+        // Обработка ошибок на основе текста ошибки
+        const errorMsg = response.error || "Неизвестная ошибка";
+
+        if (errorMsg.includes("401") || errorMsg.includes("403")) {
+            throw new Error("Невалидный токен");
+        } else if (errorMsg.includes("Неизвестная ошибка") && !errorMsg.includes("status")) {
+            throw new Error("API недоступен");
         } else {
-            console.error("Неожиданная ошибка при проверке JWT:", error);
-            throw new Error("Неизвестная ошибка");
+            console.error("Неизвестная ошибка API:", errorMsg);
+            throw new Error("Ошибка сервера");
         }
     }
 }

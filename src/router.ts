@@ -3,9 +3,9 @@ import CreateMeeting from './components/CreateMeeting.vue'
 import Menu from './components/Menu.vue'
 import Settings from './components/Settings.vue'
 import ErrorPage from './components/ErrorPage.vue';
-import { getJwt, getJwtPayloadFromApi } from './authorization';
+import { getJwtFromCookie, getJwtPayloadFromApi } from './authorization';
+import { getUserInfoFromSessionStorage } from './utils';
 
-console.log(import.meta.env.VITE_BACK_DOMAIN + "/verify-jwt")
 
 const routes = [
     { path: '/', component: Menu, meta: { rootPath: true, requiresAuth: true } },
@@ -22,8 +22,7 @@ const router = createRouter({
 
 
 router.beforeResolve(async (to, from, next) => {
-    const token = getJwt();
-    console.log(token);
+    const token = getJwtFromCookie();
 
     if (!token) {
         if (to.meta.errorHandler)
@@ -34,12 +33,11 @@ router.beforeResolve(async (to, from, next) => {
     }
 
     try {
-        const payload = await getJwtPayloadFromApi(token);
-        console.log(payload);
+        await getJwtPayloadFromApi(token);
 
-        sessionStorage.setItem("userInfo", JSON.stringify(payload))
+        const userInfo = await getUserInfoFromSessionStorage()
 
-        if (to.meta.adminOnly && !payload.is_admin) {
+        if (to.meta.adminOnly && !userInfo.is_admin) {
             next("/create-meeting");
         } else if (to.meta.rootPath) {
             next("/menu");
