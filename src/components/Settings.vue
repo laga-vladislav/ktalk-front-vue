@@ -5,21 +5,24 @@
         <Form v-slot="$form" :resolver="resolver" @submit="submitForm">
             <div>
                 <InputText name="space" type="text" placeholder="Имя пространства КТолк" />
-                <Message v-if="$form.space?.invalid" severity="error" size="small" variant="simple">{{
-                    $form.space.error?.message }}</Message>
+                <Message v-if="$form.space?.dirty && $form.space?.invalid" severity="error" size="small"
+                    variant="simple">{{
+                        $form.space.error?.message }}</Message>
             </div>
             <div>
                 <InputText name="admin_email" type="text" placeholder="Почта администратора пространства КТолк" />
-                <Message v-if="$form.admin_email?.invalid" severity="error" size="small" variant="simple">{{
-                    $form.admin_email.error?.message }}</Message>
+                <Message v-if="$form.admin_email?.dirty && $form.admin_email?.invalid" severity="error" size="small"
+                    variant="simple">{{
+                        $form.admin_email.error?.message }}</Message>
             </div>
             <div>
                 <InputText name="api_key" type="text" placeholder="API ключ пространства КТолк" />
-                <Message v-if="$form.api_key?.invalid" severity="error" size="small" variant="simple">{{
-                    $form.api_key.error?.message }}</Message>
+                <Message v-if="$form.api_key?.dirty && $form.api_key?.invalid" severity="error" size="small"
+                    variant="simple">{{
+                        $form.api_key.error?.message }}</Message>
             </div>
             <Button
-                :disabled="isSubmitting || !$form.valid || !$form.space?.touched || !$form.admin_email?.touched || !$form.api_key?.touched"
+                :disabled="isSubmitting || !$form.valid || !$form.space?.value || !$form.admin_email?.value || !$form.api_key?.value"
                 type="submit" severity="success" label="Сохранить" />
         </Form>
     </div>
@@ -60,7 +63,7 @@ const API_URL = import.meta.env.VITE_BACK_DOMAIN;
 const API_SET_SETTINGS_ENDPOINT = '/set-settings';
 
 const jwtToken = getJwtFromCookie();
-const userInfo = ref<IUser | null>(null); // IUser из твоего кода
+const userInfo = ref<IUser | null>(null);
 const isSubmitting = ref(false);
 
 const resolver = yupResolver(
@@ -81,6 +84,12 @@ onMounted(async () => {
 
 async function submitForm(event: FormSubmitEvent) {
     if (!userInfo.value) return; // Если userInfo ещё не загружен
+
+    const isValid = event.valid; // event.valid — флаг валидности от PrimeVue Form
+    if (!isValid) {
+        console.log("Форма не валидна, запрос не отправлен");
+        return;
+    }
 
     isSubmitting.value = true;
     const formData = {
