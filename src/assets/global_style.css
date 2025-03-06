@@ -1,0 +1,49 @@
+:root {
+    --ktalk-background: #333231;
+    --ktalk-grey: #545352;
+}
+
+input {
+    width: 100%;
+}
+
+main#main {
+    min-width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--ktalk-background)
+}
+
+div#main-container {
+    color: white;
+    font-size: 1rem;
+    background-color: var(--ktalk-background);
+    max-width: 440px;
+    max-height: 863px;
+    border: var(--ktalk-grey) 1px;
+    border-radius: 5px;
+    padding: 1.8rem 1.2rem;
+}
+
+div#main-container>*:not(:last-child) {
+    margin-bottom: 29px;
+}
+
+.meeting-item>*:not(:last-child) {
+    margin-bottom: 19px;
+}
+
+.meeting-subitem>*:not(:last-child) {
+    margin-bottom: 12px;
+}
+
+h1 {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.light-text {
+    opacity: .5;
+}
