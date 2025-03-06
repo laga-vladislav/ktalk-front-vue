@@ -8,12 +8,24 @@ interface ApiResponse<T> {
 
 async function sendApiRequest<T>(
     apiUrl: string,
-    data: Record<string, any>,
+    data: Record<string, any> = {},
     token: string,
-    method: 'POST' | 'GET' = 'POST'
+    method: 'POST' | 'GET' = 'POST',
+    query: Record<string, any> = {} // Поддержка любых ключей и значений
 ): Promise<ApiResponse<T>> {
     try {
-        const response = await fetch(apiUrl, {
+        let url = apiUrl;
+        if (Object.keys(query).length > 0) {
+            const queryParams = new URLSearchParams();
+            for (const [key, value] of Object.entries(query)) {
+                if (value !== undefined && value !== null) {
+                    queryParams.append(key, String(value));
+                }
+            }
+            url += `?${queryParams.toString()}`;
+        }
+
+        const response = await fetch(url, {
             method,
             headers: {
                 'Content-Type': 'application/json',
@@ -27,9 +39,8 @@ async function sendApiRequest<T>(
             throw new Error(`Ошибка ${response.status}: ${errorText || 'Неизвестная ошибка'}`);
         }
 
-        // Проверяем, есть ли тело
         const text = await response.text();
-        const result = text ? JSON.parse(text) as T : undefined; // Если пусто — null
+        const result = text ? JSON.parse(text) as T : undefined;
         return { success: true, data: result };
     } catch (error) {
         return {
