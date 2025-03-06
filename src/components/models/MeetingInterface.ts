@@ -1,11 +1,11 @@
 export interface IMeeting {
     subject: string,
     description: string,
-    start: Date,
-    end: Date,
+    start: Date | string | number,
+    end: Date | string | number,
     timezone: string,
     allowAnonymous: boolean,
     enableSip: boolean,
-    enableAutorecording: boolean,
+    enableAutoRecording: boolean,
     pinCode: string | null
 }

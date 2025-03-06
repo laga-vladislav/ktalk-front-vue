@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import MeetingTextInformation from './MeetingTextInformation.vue';
 import MeetingDatetimeOptions from './MeetingDatetimeOptions.vue';
@@ -40,16 +40,35 @@ import axios from 'axios'
 import MeetingBooleanOptions from './MeetingBooleanOptions.vue';
 import MeetingPincodeOptions from './MeetingPincodeOptions.vue';
 import type { IUser } from './models/UserInterface';
+import { getJwtFromCookie } from '@/authorization';
+import { getUserInfoFromSessionStorage } from '@/utils';
+import { sendApiRequest } from '@/requestSender';
+import type { IKTalkMeeting } from './models/KtalkMeetingInformationModel';
 
-const userInfoString = sessionStorage.getItem('userInfo')
-const userInfo: IUser = userInfoString ? JSON.parse(userInfoString) : null
+const jwtToken = getJwtFromCookie()
+const userInfo = ref<IUser | null>(null);
+const API_URL = import.meta.env.VITE_BACK_DOMAIN;
+const API_CREATE_INTERNAL_MEETING_ENDPOINT = '/create-internal-meeting';
+
+onMounted(async () => {
+    try {
+        userInfo.value = await getUserInfoFromSessionStorage();
+    } catch (error) {
+        console.error("Ошибка загрузки userInfo:", error);
+    }
+});
 
 function getRandomArbitrary(min: number, max: number) {
     return Math.ceil(Math.random() * (max - min) + min);
 }
 
+function formatDate(date: Date): string {
+    const pad = (num: number) => num.toString().padStart(2, '0');
+    return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
 const meetingTheme = ref()
-const meetingText = ref()
+const meetingText = ref("")
 
 const now = new Date()
 const pickedDate = ref(now)
@@ -69,22 +88,33 @@ async function submit() {
     const meeting: IMeeting = {
         subject: meetingTheme.value,
         description: meetingText.value,
-        start: pickedTimeFrom.value,
-        end: pickedTimeTo.value,
+        start: formatDate(pickedTimeFrom.value),
+        end: formatDate(pickedTimeTo.value),
         timezone: timezone.value,
         allowAnonymous: allowAnonymous.value,
         enableSip: enableSip.value,
-        enableAutorecording: enableAutoRecording.value,
-        pinCode: enablePinCode.value ? pinCode.value : null
+        enableAutoRecording: enableAutoRecording.value,
+        pinCode: enablePinCode.value ? pinCode.value : ""
     }
 
-    const request = {
-         
+    console.log(meeting)
+
+    const result = await sendApiRequest<IKTalkMeeting>(
+        API_URL + API_CREATE_INTERNAL_MEETING_ENDPOINT,
+        meeting,
+        jwtToken,
+        'POST',
+        {
+            'creatorId': userInfo.value?.id,
+            'memberId': userInfo.value?.member_id
+        }
+    )
+
+    if (result.success) {
+        console.log(result)
+    } else {
+        console.error(`Ошибка при создании встречи ${result.error}`)
     }
-
-    const result = axios.post('http://127.0.0.1:8000/create_meeting',)
-
-    console.log(result)
 
 }
 </script>
