@@ -24,7 +24,8 @@ async function sendApiRequest<T>(
             }
             url += `?${queryParams.toString()}`;
         }
-
+        
+        console.log(method)
         const response = await fetch(url, {
             method,
             headers: {
