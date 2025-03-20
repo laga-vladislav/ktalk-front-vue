@@ -23,6 +23,7 @@ const router = createRouter({
 
 router.beforeResolve(async (to, from, next) => {
     const token = getJwtFromCookie();
+    console.log(token)
 
     if (!token) {
         if (to.meta.errorHandler)
