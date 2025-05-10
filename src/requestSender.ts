@@ -15,6 +15,7 @@ async function sendApiRequest<T>(
 ): Promise<ApiResponse<T>> {
     try {
         let url = apiUrl;
+        console.log(`url: ${url}`)
         if (Object.keys(query).length > 0) {
             const queryParams = new URLSearchParams();
             for (const [key, value] of Object.entries(query)) {

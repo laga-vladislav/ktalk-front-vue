@@ -3,7 +3,7 @@ import CreateMeeting from './components/CreateMeeting.vue'
 import Menu from './components/Menu.vue'
 import Settings from './components/Settings.vue'
 import ErrorPage from './components/ErrorPage.vue';
-import { getJwtFromCookie, getJwtPayloadFromApi } from './authorization';
+import { getJwtPayloadFromApi } from './authorization';
 import { getUserInfoFromSessionStorage } from './utils';
 
 
@@ -22,14 +22,16 @@ const router = createRouter({
 
 
 router.beforeResolve(async (to, from, next) => {
-    const token = getJwtFromCookie();
+    // const token = getJwtFromCookie();
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token')
     console.log(token)
 
     if (!token) {
         if (to.meta.errorHandler)
             next()
         else
-            next({ path: "/error", query: { message: "Куки потерялись" } });
+            next({ path: "/error", query: { message: "Был получен неверный токен" } });
         return
     }
 

@@ -40,12 +40,11 @@ import axios from 'axios'
 import MeetingBooleanOptions from './MeetingBooleanOptions.vue';
 import MeetingPincodeOptions from './MeetingPincodeOptions.vue';
 import type { IUser } from './models/UserInterface';
-import { getJwtFromCookie } from '@/authorization';
-import { getUserInfoFromSessionStorage } from '@/utils';
+import { getTokenFromSessionStorage, getUserInfoFromSessionStorage } from '@/utils';
 import { sendApiRequest } from '@/requestSender';
 import type { IKTalkMeeting } from './models/KtalkMeetingInformationModel';
 
-const jwtToken = getJwtFromCookie()
+const jwtToken = getTokenFromSessionStorage();
 const userInfo = ref<IUser | null>(null);
 const API_URL = import.meta.env.VITE_BACK_DOMAIN;
 const API_CREATE_INTERNAL_MEETING_ENDPOINT = '/create-internal-meeting';
@@ -56,10 +55,16 @@ onMounted(async () => {
     } catch (error) {
         console.error("Ошибка загрузки userInfo:", error);
     }
+    console.debug("UserInfo:", userInfo)
 });
 
 function getRandomArbitrary(min: number, max: number) {
     return Math.ceil(Math.random() * (max - min) + min);
+}
+
+function formatUtcDate(date: Date): string {
+    const pad = (num: number) => num.toString().padStart(2, '0');
+    return `${pad(date.getUTCDate())}.${pad(date.getUTCMonth() + 1)}.${date.getUTCFullYear()} ${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}:${pad(date.getUTCSeconds())}`;
 }
 
 function formatDate(date: Date): string {
@@ -105,7 +110,7 @@ async function submit() {
         jwtToken,
         'POST',
         {
-            'creatorId': userInfo.value?.id,
+            'creatorId': userInfo.value?.user_id,
             'memberId': userInfo.value?.member_id
         }
     )
