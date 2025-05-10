@@ -54,15 +54,15 @@ import { Form, type FormSubmitEvent } from '@primevue/forms';
 import { yupResolver } from '@primevue/forms/resolvers/yup';
 import * as yup from 'yup';
 import { ref, onMounted } from 'vue';
-import { getUserInfoFromSessionStorage } from '@/utils';
+import { getTokenFromSessionStorage, getUserInfoFromSessionStorage } from '@/utils';
 import { sendApiRequest } from '@/requestSender';
-import { getJwtFromCookie } from '@/authorization';
 import { type IUser } from './models/UserInterface';
 
 const API_URL = import.meta.env.VITE_BACK_DOMAIN;
 const API_SET_SETTINGS_ENDPOINT = '/set-settings';
 
-const jwtToken = getJwtFromCookie();
+const jwtToken = getTokenFromSessionStorage();
+console.debug("Token is", jwtToken)
 const userInfo = ref<IUser | null>(null);
 const isSubmitting = ref(false);
 
