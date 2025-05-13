@@ -4,7 +4,7 @@ import Menu from './components/Menu.vue'
 import Settings from './components/Settings.vue'
 import ErrorPage from './components/ErrorPage.vue';
 import { getJwtPayloadFromApi } from './authorization';
-import { getUserInfoFromSessionStorage } from './utils';
+import { getUserInfoFromSessionStorage, getTokenFromSessionStorage } from './utils';
 
 
 const routes = [
@@ -22,59 +22,55 @@ const router = createRouter({
 
 
 router.beforeResolve(async (to, from, next) => {
-    // const token = getJwtFromCookie();
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token')
-    console.log(token)
-
-    if (!token) {
-        if (to.meta.errorHandler)
-            next()
-        else
-            next({ path: "/error", query: { message: "Был получен неверный токен" } });
-        return
-    }
-
+    console.log("beforeResolve called", to.fullPath)
     try {
-        await getJwtPayloadFromApi(token);
+        const urlParams = new URLSearchParams(window.location.search);
+        let token = urlParams.get('token')
+        if (!token)
+            token = getTokenFromSessionStorage()
 
+        console.log("Token:", token)
+
+        if (!token) {
+            if (to.meta.errorHandler) {
+                console.log("No token, staying on error")
+                return next()
+            } else {
+                console.log("No token, redirecting to /error")
+                return next({ path: "/error", query: { message: "Был получен неверный токен" } })
+            }
+        }
+
+        await getJwtPayloadFromApi(token)
         const userInfo = await getUserInfoFromSessionStorage()
 
+        console.log("User info:", userInfo)
+
         if (to.meta.adminOnly && !userInfo.is_admin) {
-            next("/create-meeting");
+            console.log("Not admin, redirect to /create-meeting")
+            return next("/create-meeting")
         } else if (to.meta.rootPath) {
-            next("/menu");
+            console.log("Root path, redirecting to /menu")
+            return next("/menu")
         } else if (to.meta.errorHandler) {
-            next('/')
+            console.log("Already on error, continue")
+            return next()
         } else {
-            next()
+            console.log("All good, proceed")
+            return next()
         }
-    }
-    catch (error: any) {
-        console.error("Ошибка в beforeResolve:", error.message);
+    } catch (error: any) {
+        console.error("Ошибка в beforeResolve:", error.message)
 
         if (to.meta.errorHandler) {
-            return next();
+            return next()
         }
 
-        switch (error.message) {
-            case "API недоступен":
-                return next({
-                    path: "/error",
-                    query: { message: "Нет доступа к API сервиса" },
-                });
-            case "Невалидный токен":
-                return next({
-                    path: "/error",
-                    query: { message: "Токен недействителен" },
-                });
-            default:
-                return next({
-                    path: "/error",
-                    query: { message: "Произошла неизвестная ошибка" },
-                });
-        }
+        return next({
+            path: "/error",
+            query: { message: "Произошла ошибка: " + error.message },
+        })
     }
-});
+})
 
 export default router
